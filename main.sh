@@ -19,10 +19,10 @@ green='\e[0;32m'
 TIME=$(date '+%d %b %Y')
 ipsaya=$(wget -qO- ipinfo.io/ip)
 TIMES="10"
-CHATID="2074448736"
-CHATIDX="2074448736"
-KEY="7090076150:AAGbVod-L-7PFh7U1U61xPBGkmT1XXRuvb4"
-KEYX="7090076150:AAGbVod-L-7PFh7U1U61xPBGkmT1XXRuvb4"
+CHATID="1210833546"
+CHATIDX="1210833546"
+KEY="6006599143:AAEgstCAioq35JgX97HaW_G3TAkLKzLZS_w"
+KEYX="6006599143:AAEgstCAioq35JgX97HaW_G3TAkLKzLZS_w"
 URL="https://api.telegram.org/bot$KEY/sendMessage"
 URLX="https://api.telegram.org/bot$KEYX/sendMessage"
 clear
@@ -329,6 +329,10 @@ mkdir -p /etc/kyt/limit/vmess/ip
 mkdir -p /etc/kyt/limit/vless/ip
 mkdir -p /etc/kyt/limit/trojan/ip
 mkdir -p /etc/kyt/limit/ssh/ip
+mkdir -p /etc/limit/vmess
+mkdir -p /etc/limit/vless
+mkdir -p /etc/limit/trojan
+mkdir -p /etc/limit/ssh
 mkdir -p /etc/vmess
 mkdir -p /etc/vless
 mkdir -p /etc/trojan
@@ -445,86 +449,132 @@ print_success "Password SSH"
 }
 function udp_mini(){
 clear
-print_install "Memasang Service limit Quota"
-wget raw.githubusercontent.com/Zsandz/vip/main/Fls/limit.sh && chmod +x limit.sh && ./limit.sh
+print_install "Memasang Service Limit Quota"
+wget -q -O /usr/local/sbin/quota "${REPO}limit/quota"
+chmod +x /usr/local/sbin/quota
+chmod + x /usr/local/sbin/quota
+cd /usr/local/sbin/
+sed -i 's/\r//' quota
 cd
-wget -q -O /usr/bin/limit-ip "${REPO}Fls/limit-ip"
+wget -q -O /usr/bin/limit-ip "${REPO}limit/limit-ip"
 chmod +x /usr/bin/*
 cd /usr/bin
 sed -i 's/\r//' limit-ip
 cd
-wget -q -O /usr/bin/limit-ip-ssh "${REPO}Fls/limit-ip-ssh"
-chmod +x /usr/bin/*
-cd /usr/bin
-sed -i 's/\r//' limit-ip-ssh
-cd
 clear
-cat >/etc/systemd/system/sship.service << EOF
-[Unit]
-Description=https://github.com/yogz-store
-After=network.target
-
-[Service]
-ExecStart=/usr/bin/limit-ip-ssh
-Restart=always
-RestartSec=3
-StartLimitIntervalSec=60
-StartLimitBurst=5
-
-[Install]
-WantedBy=default.target
-EOF
-systemctl daemon-reload
-systemctl restart sship
-systemctl enable sship
+#SERVICE LIMIT ALL IP
 cat >/etc/systemd/system/vmip.service << EOF
 [Unit]
 Description=My
 ProjectAfter=network.target
+
 [Service]
 WorkingDirectory=/root
 ExecStart=/usr/bin/limit-ip vmip
 Restart=always
+
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
 systemctl restart vmip
 systemctl enable vmip
+
 cat >/etc/systemd/system/vlip.service << EOF
 [Unit]
 Description=My
 ProjectAfter=network.target
+
 [Service]
 WorkingDirectory=/root
 ExecStart=/usr/bin/limit-ip vlip
 Restart=always
+
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
 systemctl restart vlip
 systemctl enable vlip
+
 cat >/etc/systemd/system/trip.service << EOF
 [Unit]
 Description=My
 ProjectAfter=network.target
+
 [Service]
 WorkingDirectory=/root
 ExecStart=/usr/bin/limit-ip trip
 Restart=always
+
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
 systemctl restart trip
 systemctl enable trip
+#SERVICE LIMIT QUOTA
+
+#SERVICE VMESS
+cat >/etc/systemd/system/qmv.service << EOF
+[Unit]
+Description=My
+ProjectAfter=network.target
+
+[Service]
+WorkingDirectory=/root
+ExecStart=/usr/local/sbin/quota vmess
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl restart qmv
+systemctl enable qmv
+
+#SERVICE VLESS
+cat >/etc/systemd/system/qmvl.service << EOF
+[Unit]
+Description=My 
+ProjectAfter=network.target
+
+[Service]
+WorkingDirectory=/root
+ExecStart=/usr/local/sbin/quota vless
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl restart qmvl
+systemctl enable qmvl
+
+#SERVICE TROJAN
+cat >/etc/systemd/system/qmtr.service << EOF
+[Unit]
+Description=My 
+ProjectAfter=network.target
+
+[Service]
+WorkingDirectory=/root
+ExecStart=/usr/local/sbin/quota trojan
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl restart qmtr
+systemctl enable qmtr
+# // Installing UDP Mini
 mkdir -p /usr/local/kyt/
-wget -q -O /usr/local/kyt/udp-mini "${REPO}Fls/udp-mini"
+wget -q -O /usr/local/kyt/udp-mini "${REPO}badvpn/udp-mini"
 chmod +x /usr/local/kyt/udp-mini
-wget -q -O /etc/systemd/system/udp-mini-1.service "${REPO}Fls/udp-mini-1.service"
-wget -q -O /etc/systemd/system/udp-mini-2.service "${REPO}Fls/udp-mini-2.service"
-wget -q -O /etc/systemd/system/udp-mini-3.service "${REPO}Fls/udp-mini-3.service"
+wget -q -O /etc/systemd/system/udp-mini-1.service "${REPO}badvpn/udp-mini-1.service"
+wget -q -O /etc/systemd/system/udp-mini-2.service "${REPO}badvpn/udp-mini-2.service"
+wget -q -O /etc/systemd/system/udp-mini-3.service "${REPO}badvpn/udp-mini-3.service"
 systemctl disable udp-mini-1
 systemctl stop udp-mini-1
 systemctl enable udp-mini-1
@@ -537,7 +587,7 @@ systemctl disable udp-mini-3
 systemctl stop udp-mini-3
 systemctl enable udp-mini-3
 systemctl start udp-mini-3
-print_success "files Quota Service"
+print_success "Limit Quota Service"
 }
 function ssh_slow(){
 clear
